@@ -27,7 +27,7 @@
 	</button>
 
 	{#if showSettings}
-		<div class="p-4 pt-0 space-y-4 border-t border-white/10">
+		<div class="p-4 space-y-4 border-t border-white/10">
 			<!-- Recalibrate button -->
 			<div class="flex items-center justify-between">
 				<div>
