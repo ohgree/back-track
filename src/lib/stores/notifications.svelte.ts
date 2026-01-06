@@ -127,11 +127,12 @@ export const notificationStore: NotificationStore = {
           ? "✅"
           : "ℹ️";
 
+      // Use unique tag per notification so new ones always appear
+      // even if previous notification wasn't dismissed
       new Notification("BackTrack", {
         body: `${icon} ${message}`,
         icon: "/favicon.svg",
-        tag: "posture-alert",
-        renotify: true,
+        tag: `posture-alert-${Date.now()}`,
       });
     }
   },
