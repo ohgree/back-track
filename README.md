@@ -2,6 +2,7 @@
 
 AI-powered posture monitoring web app that uses your camera to detect bad posture and send notifications when you lean, get too close to the screen, or slouch.
 
+[![GitHub](https://img.shields.io/badge/GitHub-ohgree-181717?logo=github)](https://github.com/ohgree/back-track)
 ![Svelte](https://img.shields.io/badge/Svelte-5-ff3e00?logo=svelte)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38bdf8?logo=tailwindcss)
@@ -38,7 +39,7 @@ AI-powered posture monitoring web app that uses your camera to detect bad postur
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/ohgree/back-track.git
 cd back-track
 
 # Install dependencies
