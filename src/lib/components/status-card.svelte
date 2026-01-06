@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { PostureStatus, postureStore } from "../stores/posture.svelte";
   import { i18n } from "../stores/i18n.svelte";
+  import { PostureStatus, postureStore } from "../stores/posture.svelte";
 
   // Individual metric status
   const distanceStatus = $derived.by(() => {
@@ -54,24 +54,29 @@
 
   const activeIssues = $derived.by(() => {
     if (postureStore.status === PostureStatus.NOT_DETECTED) {
-      return [{ label: i18n.t('searching'), type: "searching" as IssueType }];
+      return [{ label: i18n.t("searching"), type: "searching" as IssueType }];
     }
 
     const issues: { label: string; type: IssueType }[] = [];
 
     if (distanceStatus !== "good") {
-      issues.push({ label: i18n.t('tooClose'), type: "distance" });
+      issues.push({ label: i18n.t("tooClose"), type: "distance" });
     }
     if (leanStatus !== "good") {
-      const label = postureStore.leanAngle > 0 ? i18n.t('leaningRight') : i18n.t('leaningLeft');
+      const label =
+        postureStore.leanAngle > 0
+          ? i18n.t("leaningRight")
+          : i18n.t("leaningLeft");
       issues.push({ label, type: "lean" });
     }
     if (slouchStatus !== "good") {
-      issues.push({ label: i18n.t('slouching'), type: "slouch" });
+      issues.push({ label: i18n.t("slouching"), type: "slouch" });
     }
 
     if (issues.length === 0) {
-      return [{ label: i18n.t('perfectPosture'), type: "perfect" as IssueType }];
+      return [
+        { label: i18n.t("perfectPosture"), type: "perfect" as IssueType },
+      ];
     }
 
     return issues;
@@ -181,7 +186,7 @@
             <rect x="8" y="12" width="8" height="8" rx="1" />
           </svg>
         {:else if issue.type === "lean"}
-          <!-- Tilted balance/level icon -->
+          <!-- Abstract tilt indicator -->
           <svg
             class="w-6 h-6"
             viewBox="0 0 24 24"
@@ -190,16 +195,21 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
+            style="transform: scaleX({postureStore.leanAngle > 0 ? -1 : 1})"
           >
-            <path d="M12 2v4" />
-            <path d="M4 10l8-2 8 2" />
-            <circle cx="4" cy="14" r="2" />
-            <circle cx="20" cy="10" r="2" />
-            <path d="M4 16v4" />
-            <path d="M20 12v8" />
+            <!-- Tilted bar -->
+            <path d="M4 14 L20 8" />
+            <!-- Level reference (dashed) -->
+            <path d="M4 11 L20 11" stroke-dasharray="2 2" opacity="0.4" />
+            <!-- End caps -->
+            <circle cx="4" cy="14" r="2" fill={cardStyles.iconColor} />
+            <circle cx="20" cy="8" r="2" fill={cardStyles.iconColor} />
+            <!-- Center pivot -->
+            <circle cx="12" cy="11" r="1.5" />
+            <path d="M12 12.5 L12 16" />
           </svg>
         {:else if issue.type === "slouch"}
-          <!-- Curved spine/posture icon -->
+          <!-- Slouching person icon - clear side profile -->
           <svg
             class="w-6 h-6"
             viewBox="0 0 24 24"
@@ -209,10 +219,18 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
-            <circle cx="12" cy="4" r="2" />
-            <path d="M12 6c0 0 0 4-2 8s-2 6-2 6" />
-            <path d="M16 14c-1-2-2-4-4-4" />
-            <path d="M8 20h4" />
+            <!-- Head pushed forward -->
+            <circle cx="7" cy="6" r="2.5" />
+            <!-- Neck leaning forward -->
+            <path d="M9 8 L12 10" />
+            <!-- Curved upper back (the slouch) -->
+            <path d="M12 10 Q16 12 15 16" />
+            <!-- Lower back to hips -->
+            <path d="M15 16 L14 21" />
+            <!-- Chair/seat reference -->
+            <path d="M10 21 H18" />
+            <!-- Arm hanging -->
+            <path d="M12 11 Q10 14 8 16" />
           </svg>
         {/if}
       {/each}
@@ -224,7 +242,7 @@
         {activeIssues.map((i) => i.label).join(", ")}
       </h3>
       <p class="text-white/50 text-sm font-body mt-1">
-        {i18n.t('confidence')}: {postureStore.confidence}%
+        {i18n.t("confidence")}: {postureStore.confidence}%
       </p>
     </div>
   </div>
@@ -236,19 +254,19 @@
       >
         {postureStore.distance}<span class="text-sm opacity-50">cm</span>
       </p>
-      <p class="text-xs text-white/40 font-body mt-1">{i18n.t('distance')}</p>
+      <p class="text-xs text-white/40 font-body mt-1">{i18n.t("distance")}</p>
     </div>
     <div class="text-center">
       <p class="text-2xl font-display font-bold {getStatusColor(leanStatus)}">
         {postureStore.leanAngle.toFixed(1)}°
       </p>
-      <p class="text-xs text-white/40 font-body mt-1">{i18n.t('lean')}</p>
+      <p class="text-xs text-white/40 font-body mt-1">{i18n.t("lean")}</p>
     </div>
     <div class="text-center">
       <p class="text-2xl font-display font-bold {getStatusColor(slouchStatus)}">
         {postureStore.shoulderAngle}°
       </p>
-      <p class="text-xs text-white/40 font-body mt-1">{i18n.t('slouch')}</p>
+      <p class="text-xs text-white/40 font-body mt-1">{i18n.t("slouch")}</p>
     </div>
   </div>
 </div>
