@@ -10,7 +10,7 @@
     getNoseToShoulderRatio,
     type Landmark,
     type PoseAnalysis,
-  } from "../utils/pose-analyzer.ts";
+  } from "../utils/pose-analyzer";
 
   let videoElement = $state<HTMLVideoElement | null>(null);
   let canvasElement = $state<HTMLCanvasElement | null>(null);
@@ -315,6 +315,16 @@
     if (!calibrationStartTime) return 0;
     return Math.min(100, ((Date.now() - calibrationStartTime) / CALIBRATION_TIME) * 100);
   });
+
+  // Calibration step states
+  const isDetected = $derived(postureStore.confidence > 70);
+  const step1Done = $derived(postureStore.confidence > 0);
+  const step2Done = $derived(postureStore.confidence > 70);
+  const step3Done = $derived(calibrationProgress >= 100);
+  const confidenceColor = $derived(
+    postureStore.confidence > 70 ? 'text-back-400' : 
+    postureStore.confidence > 30 ? 'text-warn-400' : 'text-danger-400'
+  );
 </script>
 
 <div class="relative w-full aspect-4/3 bg-black/50 rounded-2xl overflow-hidden">
@@ -566,17 +576,108 @@
     </div>
   {/if}
 
-  <!-- Calibration progress -->
+  <!-- Calibration overlay -->
   {#if postureStore.isTracking && !postureStore.isCalibrated}
-    <div class="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent">
-      <div class="text-center mb-2">
-        <span class="text-white/80 text-sm font-body">Calibrating... Position yourself in frame</span>
+    <!-- Full overlay with instructions -->
+    <div class="absolute inset-0 pointer-events-none">
+      <!-- Top instruction panel -->
+      <div class="absolute top-0 left-0 right-0 p-4 bg-linear-to-b from-black/80 to-transparent">
+        <div class="text-center">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-back-500/20 border border-back-500/40 backdrop-blur-sm">
+            <div class="relative flex h-3 w-3">
+              {#if postureStore.confidence > 70}
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-back-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-back-500"></span>
+              {:else}
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-warn-500"></span>
+              {/if}
+            </div>
+            <span class="text-white font-display font-semibold text-sm">
+              {#if postureStore.confidence > 70}
+                Hold still — Calibrating...
+              {:else}
+                Position yourself in frame
+              {/if}
+            </span>
+          </div>
+        </div>
       </div>
-      <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+
+      <!-- Center frame guide -->
+      <div class="absolute inset-0 flex items-center justify-center">
         <div 
-          class="h-full bg-linear-to-r from-back-400 to-back-500 rounded-full transition-all duration-200"
-          style="width: {calibrationProgress}%"
-        ></div>
+          class="w-48 h-64 border-2 rounded-3xl transition-all duration-300 {isDetected ? 'border-back-500 shadow-[0_0_30px_rgba(34,197,94,0.3)]' : 'border-white/30'}"
+        >
+          <!-- Corner markers -->
+          <div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 rounded-tl-xl transition-colors duration-300 {isDetected ? 'border-back-500' : 'border-white/50'}"></div>
+          <div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 rounded-tr-xl transition-colors duration-300 {isDetected ? 'border-back-500' : 'border-white/50'}"></div>
+          <div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 rounded-bl-xl transition-colors duration-300 {isDetected ? 'border-back-500' : 'border-white/50'}"></div>
+          <div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 rounded-br-xl transition-colors duration-300 {isDetected ? 'border-back-500' : 'border-white/50'}"></div>
+        </div>
+      </div>
+
+      <!-- Confidence indicator badge -->
+      <div class="absolute top-16 right-4 text-right">
+        <div class="px-3 py-2 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10">
+          <div class="text-xs text-white/50 uppercase tracking-wider mb-1">Detection</div>
+          <div class="text-lg font-mono font-bold transition-colors duration-300 {confidenceColor}">
+            {postureStore.confidence}%
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom progress panel -->
+      <div class="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 via-black/50 to-transparent">
+        <!-- Step indicators -->
+        <div class="flex justify-center gap-2 mb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 {step1Done ? 'bg-back-500 text-white' : 'bg-white/20 text-white/50'}">
+              {#if step1Done}✓{:else}1{/if}
+            </div>
+            <span class="text-xs text-white/60 font-body">Camera ready</span>
+          </div>
+          <div class="w-8 h-px bg-white/20 self-center"></div>
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 {step2Done ? 'bg-back-500 text-white' : 'bg-white/20 text-white/50'}">
+              {#if step2Done}✓{:else}2{/if}
+            </div>
+            <span class="text-xs text-white/60 font-body">Person detected</span>
+          </div>
+          <div class="w-8 h-px bg-white/20 self-center"></div>
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 {step3Done ? 'bg-back-500 text-white' : 'bg-white/20 text-white/50'}">
+              3
+            </div>
+            <span class="text-xs text-white/60 font-body">Calibrated</span>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="max-w-md mx-auto">
+          <div class="flex justify-between text-xs text-white/50 mb-1.5 font-body">
+            <span>
+              {#if !step2Done}
+                Waiting for stable detection...
+              {:else if calibrationProgress < 100}
+                Calibrating posture baseline...
+              {:else}
+                Complete!
+              {/if}
+            </span>
+            <span class="font-mono">{Math.round(calibrationProgress)}%</span>
+          </div>
+          <div class="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            <div 
+              class="h-full rounded-full transition-all duration-200 {step2Done ? 'bg-back-500' : 'bg-warn-500'}"
+              style="width: {step2Done ? calibrationProgress : 0}%"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="mt-3 text-center text-xs text-white/40 font-body">
+          💡 Sit with good posture — this will be your baseline
+        </div>
       </div>
     </div>
   {/if}
