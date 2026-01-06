@@ -3,7 +3,7 @@
     notificationStore,
     NotificationType,
     type NotificationTypeValue,
-  } from "../stores/notifications.svelte.ts";
+  } from "../stores/notifications.svelte";
 
   function getIcon(type: NotificationTypeValue): string {
     switch (type) {

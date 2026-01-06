@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { postureStore, PostureStatus } from "../stores/posture.svelte.ts";
+  import { postureStore, PostureStatus } from "../stores/posture.svelte";
   import {
     notificationStore,
     NotificationType,
-  } from "../stores/notifications.svelte.ts";
+  } from "../stores/notifications.svelte";
   import {
     analyzePose,
     getNoseToShoulderRatio,
@@ -317,7 +317,7 @@
   });
 </script>
 
-<div class="relative w-full aspect-[4/3] bg-black/50 rounded-2xl overflow-hidden">
+<div class="relative w-full aspect-4/3 bg-black/50 rounded-2xl overflow-hidden">
   <!-- Camera feed (hidden when in abstract view) -->
   <video
     bind:this={videoElement}
@@ -341,7 +341,7 @@
   {#if showAbstractView && postureStore.isTracking}
     {@const distanceOffset = Math.max(0, Math.min(80, (60 - postureStore.distance) * 2))}
     {@const slouchOffset = postureStore.shoulderAngle * 1.5}
-    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-950">
+    <div class="absolute inset-0 flex items-center justify-center bg-linear-to-b from-slate-900 to-slate-950">
       <!-- Animated background grid -->
       <div class="absolute inset-0 opacity-10">
         <svg class="w-full h-full">
@@ -568,13 +568,13 @@
 
   <!-- Calibration progress -->
   {#if postureStore.isTracking && !postureStore.isCalibrated}
-    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+    <div class="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent">
       <div class="text-center mb-2">
         <span class="text-white/80 text-sm font-body">Calibrating... Position yourself in frame</span>
       </div>
       <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
         <div 
-          class="h-full bg-gradient-to-r from-back-400 to-back-500 rounded-full transition-all duration-200"
+          class="h-full bg-linear-to-r from-back-400 to-back-500 rounded-full transition-all duration-200"
           style="width: {calibrationProgress}%"
         ></div>
       </div>

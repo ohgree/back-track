@@ -62,10 +62,19 @@
 	--gradient-end: #1a1a2e;
 }
 
+html {
+	/* Fallback color for overscroll - blend of start and end */
+	background-color: #121220;
+}
+
 body {
 	font-family: 'DM Sans', system-ui, sans-serif;
-	background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+	background: linear-gradient(180deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+	background-attachment: fixed;
 	min-height: 100vh;
+	min-height: 100dvh;
+	/* Prevent overscroll bounce showing different color */
+	overscroll-behavior-y: none;
 }
 
 /* Custom scrollbar */
