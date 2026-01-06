@@ -11,6 +11,7 @@
     type Landmark,
     type PoseAnalysis,
   } from "../utils/pose-analyzer";
+  import { i18n } from "../stores/i18n.svelte";
 
   let videoElement = $state<HTMLVideoElement | null>(null);
   let canvasElement = $state<HTMLCanvasElement | null>(null);
@@ -102,7 +103,7 @@
     } catch (error) {
       console.error("Camera access denied:", error);
       notificationStore.add(
-        "Camera access denied. Please enable camera permissions.",
+        i18n.t('cameraAccessDenied'),
         NotificationType.DANGER,
         0
       );
@@ -135,7 +136,7 @@
     } catch (error) {
       console.error("Failed to initialize pose detection:", error);
       notificationStore.add(
-        "Failed to load pose detection model.",
+        i18n.t('poseDetectionFailed'),
         NotificationType.DANGER
       );
     }
@@ -180,7 +181,7 @@
           }
           showAbstractView = true;
           notificationStore.add(
-            "Calibration complete! Your current posture is now the baseline.",
+            i18n.t('calibrationComplete'),
             NotificationType.INFO
           );
         }
@@ -208,8 +209,21 @@
         ) {
           const issue = analysis.issues[0];
           if (issue) {
+            // Translate the issue message
+            let message: string;
+            if (issue.type === 'too_close') {
+              message = `${i18n.t('tooCloseNotification')} (${analysis.distance}cm)`;
+            } else if (issue.type === 'leaning') {
+              const direction = analysis.leanAngle > 0 
+                ? i18n.t('leaningRightNotification') 
+                : i18n.t('leaningLeftNotification');
+              message = `${direction} (${Math.abs(analysis.leanAngle)}°)`;
+            } else {
+              message = `${i18n.t('slouchingNotification')} (${analysis.shoulderAngle}°)`;
+            }
+            
             notificationStore.add(
-              issue.message,
+              message,
               issue.severity === "danger"
                 ? NotificationType.DANGER
                 : NotificationType.WARNING
@@ -437,7 +451,7 @@
             fill="#64748b" 
             font-size="10" 
             font-family="system-ui"
-          >MONITOR</text>
+          >{i18n.t('monitor')}</text>
         </g>
 
         <!-- Distance reference lines -->
@@ -537,7 +551,7 @@
         </g>
 
         <!-- Labels -->
-        <text x="280" y="85" text-anchor="middle" fill="#64748b" font-size="9" font-family="system-ui">DISTANCE</text>
+        <text x="280" y="85" text-anchor="middle" fill="#64748b" font-size="9" font-family="system-ui">{i18n.t('distance').toUpperCase()}</text>
         <text x="280" y="240" text-anchor="middle" fill={statusColor.primary} font-size="14" font-weight="bold" font-family="monospace">
           {postureStore.distance}cm
         </text>
@@ -546,13 +560,13 @@
       <!-- Stats overlay -->
       <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-8">
         <div class="text-center">
-          <div class="text-xs text-white/40 uppercase tracking-wider mb-1">Lean</div>
+          <div class="text-xs text-white/40 uppercase tracking-wider mb-1">{i18n.t('lean')}</div>
           <div class="text-xl font-mono font-bold" style="color: {statusColor.primary}">
             {postureStore.leanAngle > 0 ? '+' : ''}{postureStore.leanAngle.toFixed(1)}°
           </div>
         </div>
         <div class="text-center">
-          <div class="text-xs text-white/40 uppercase tracking-wider mb-1">Slouch</div>
+          <div class="text-xs text-white/40 uppercase tracking-wider mb-1">{i18n.t('slouch')}</div>
           <div class="text-xl font-mono font-bold" style="color: {statusColor.primary}">
             {postureStore.shoulderAngle > 0 ? '+' : ''}{postureStore.shoulderAngle.toFixed(1)}°
           </div>
@@ -565,21 +579,21 @@
         style="background: {statusColor.glow}; border-color: {statusColor.primary}; color: {statusColor.primary}"
       >
         {#if postureStore.status === PostureStatus.GOOD}
-          ✓ Good Posture
+          {i18n.t('goodPostureStatus')}
         {:else if postureStore.status === PostureStatus.LEANING}
-          ⚠ Leaning
+          {i18n.t('leaningStatus')}
         {:else if postureStore.status === PostureStatus.TOO_CLOSE}
-          ⚠ Too Close
+          {i18n.t('tooCloseStatus')}
         {:else if postureStore.status === PostureStatus.SLOUCHING}
-          ✗ Slouching
+          {i18n.t('slouchingStatus')}
         {:else}
-          ○ Detecting...
+          {i18n.t('detectingStatus')}
         {/if}
       </div>
 
       <!-- Confidence indicator -->
       <div class="absolute top-4 right-4 text-right">
-        <div class="text-xs text-white/40 uppercase tracking-wider">Confidence</div>
+        <div class="text-xs text-white/40 uppercase tracking-wider">{i18n.t('confidence')}</div>
         <div class="text-lg font-mono text-white/80">{postureStore.confidence}%</div>
       </div>
     </div>
@@ -592,7 +606,7 @@
         <div
           class="w-12 h-12 border-4 border-back-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"
         ></div>
-        <p class="text-white/80 font-body">Initializing pose detection...</p>
+        <p class="text-white/80 font-body">{i18n.t('initializingPose')}</p>
       </div>
     </div>
   {/if}
@@ -615,9 +629,9 @@
             </div>
             <span class="text-white font-display font-semibold text-sm">
               {#if postureStore.confidence > 70}
-                Hold still — Calibrating...
+                {i18n.t('holdStill')}
               {:else}
-                Position yourself in frame
+                {i18n.t('positionYourself')}
               {/if}
             </span>
           </div>
@@ -645,21 +659,21 @@
             <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 {step1Done ? 'bg-back-500 text-white' : 'bg-white/20 text-white/50'}">
               {#if step1Done}✓{:else}1{/if}
             </div>
-            <span class="text-xs text-white/60 font-body">Camera ready</span>
+            <span class="text-xs text-white/60 font-body">{i18n.t('cameraReady')}</span>
           </div>
           <div class="w-8 h-px bg-white/20 self-center"></div>
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 {step2Done ? 'bg-back-500 text-white' : 'bg-white/20 text-white/50'}">
               {#if step2Done}✓{:else}2{/if}
             </div>
-            <span class="text-xs text-white/60 font-body">Person detected</span>
+            <span class="text-xs text-white/60 font-body">{i18n.t('personDetected')}</span>
           </div>
           <div class="w-8 h-px bg-white/20 self-center"></div>
           <div class="flex items-center gap-2">
             <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300 {step3Done ? 'bg-back-500 text-white' : 'bg-white/20 text-white/50'}">
               3
             </div>
-            <span class="text-xs text-white/60 font-body">Calibrated</span>
+            <span class="text-xs text-white/60 font-body">{i18n.t('calibrated').replace(' ✓', '')}</span>
           </div>
         </div>
 
@@ -668,11 +682,11 @@
           <div class="flex justify-between text-xs text-white/50 mb-1.5 font-body">
             <span>
               {#if !step2Done}
-                Waiting for stable detection...
+                {i18n.t('waitingDetection')}
               {:else if calibrationProgress < 100}
-                Calibrating posture baseline...
+                {i18n.t('calibratingBaseline')}
               {:else}
-                Complete!
+                {i18n.t('complete')}
               {/if}
             </span>
             <span class="font-mono">{Math.round(calibrationProgress)}%</span>
@@ -687,7 +701,7 @@
 
         <!-- Tips -->
         <div class="mt-3 text-center text-xs text-white/40 font-body">
-          💡 Sit with good posture — this will be your baseline
+          {i18n.t('calibrationTip')}
         </div>
       </div>
     </div>
@@ -698,7 +712,7 @@
     <button
       onclick={toggleView}
       class="absolute bottom-4 right-4 p-2.5 rounded-xl bg-black/60 hover:bg-black/80 border border-white/20 shadow-lg shadow-black/30 backdrop-blur-md transition-all duration-200 group"
-      title={showAbstractView ? "Show camera" : "Show abstract view"}
+      title={showAbstractView ? i18n.t('showCamera') : i18n.t('showAbstractView')}
     >
       {#if showAbstractView}
         <svg class="w-5 h-5 text-white group-hover:text-back-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

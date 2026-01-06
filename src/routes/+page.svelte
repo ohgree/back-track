@@ -5,6 +5,7 @@
   import StatsCard from "$lib/components/stats-card.svelte";
   import StatusCard from "$lib/components/status-card.svelte";
   import { notificationStore } from "$lib/stores/notifications.svelte";
+  import { i18n } from "$lib/stores/i18n.svelte";
   import { onMount } from "svelte";
 
   let mounted = $state(false);
@@ -56,7 +57,7 @@
         </h1>
       </div>
       <p class="text-white/50 font-body text-lg max-w-md mx-auto">
-        AI-powered posture monitoring to keep your back healthy while you work
+        {i18n.t('appSubtitle')}
       </p>
     </header>
 
@@ -78,24 +79,24 @@
           <h3
             class="font-display font-semibold text-white/80 mb-3 flex items-center gap-2"
           >
-            <span>💡</span> Quick Tips
+            <span>💡</span> {i18n.t('quickTips')}
           </h3>
           <ul class="space-y-2 text-white/50 text-sm font-body">
             <li class="flex items-start gap-2">
               <span class="text-back-400">•</span>
-              <span>Sit at arm's length from your screen (~50-70cm)</span>
+              <span>{i18n.t('tip1')}</span>
             </li>
             <li class="flex items-start gap-2">
               <span class="text-back-400">•</span>
-              <span>Keep your shoulders level and relaxed</span>
+              <span>{i18n.t('tip2')}</span>
             </li>
             <li class="flex items-start gap-2">
               <span class="text-back-400">•</span>
-              <span>Position camera at eye level for best tracking</span>
+              <span>{i18n.t('tip3')}</span>
             </li>
             <li class="flex items-start gap-2">
               <span class="text-back-400">•</span>
-              <span>Take a break every 30 minutes to stretch</span>
+              <span>{i18n.t('tip4')}</span>
             </li>
           </ul>
         </div>
@@ -110,11 +111,10 @@
           <h3
             class="font-display font-semibold text-white/80 mb-2 flex items-center gap-2"
           >
-            <span>🔒</span> Privacy First
+            <span>🔒</span> {i18n.t('privacyFirst')}
           </h3>
           <p class="text-white/40 text-sm font-body">
-            All processing happens locally in your browser. No video data is
-            ever sent to any server.
+            {i18n.t('privacyDesc')}
           </p>
         </div>
 
@@ -122,11 +122,10 @@
           <h3
             class="font-display font-semibold text-warn-400 mb-2 flex items-center gap-2"
           >
-            <span>⚠️</span> Keep Tab Visible
+            <span>⚠️</span> {i18n.t('keepTabVisible')}
           </h3>
           <p class="text-white/40 text-sm font-body">
-            Posture monitoring only works while this tab is active. Browsers
-            pause camera processing for background tabs.
+            {i18n.t('keepTabDesc')}
           </p>
         </div>
       </div>
@@ -134,7 +133,7 @@
 
     <footer class="mt-12 text-center">
       <p class="text-white/30 text-sm font-body">
-        Built with Svelte & MediaPipe • Your posture, your privacy
+        {i18n.t('footerText')}
       </p>
       <a
         href="https://github.com/ohgree/back-track"

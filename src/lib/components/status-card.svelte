@@ -1,5 +1,6 @@
 <script lang="ts">
   import { PostureStatus, postureStore } from "../stores/posture.svelte";
+  import { i18n } from "../stores/i18n.svelte";
 
   // Individual metric status
   const distanceStatus = $derived.by(() => {
@@ -53,24 +54,24 @@
 
   const activeIssues = $derived.by(() => {
     if (postureStore.status === PostureStatus.NOT_DETECTED) {
-      return [{ label: "Searching...", type: "searching" as IssueType }];
+      return [{ label: i18n.t('searching'), type: "searching" as IssueType }];
     }
 
     const issues: { label: string; type: IssueType }[] = [];
 
     if (distanceStatus !== "good") {
-      issues.push({ label: "Too Close", type: "distance" });
+      issues.push({ label: i18n.t('tooClose'), type: "distance" });
     }
     if (leanStatus !== "good") {
-      const direction = postureStore.leanAngle > 0 ? "Right" : "Left";
-      issues.push({ label: `Leaning ${direction}`, type: "lean" });
+      const label = postureStore.leanAngle > 0 ? i18n.t('leaningRight') : i18n.t('leaningLeft');
+      issues.push({ label, type: "lean" });
     }
     if (slouchStatus !== "good") {
-      issues.push({ label: "Slouching", type: "slouch" });
+      issues.push({ label: i18n.t('slouching'), type: "slouch" });
     }
 
     if (issues.length === 0) {
-      return [{ label: "Perfect Posture", type: "perfect" as IssueType }];
+      return [{ label: i18n.t('perfectPosture'), type: "perfect" as IssueType }];
     }
 
     return issues;
@@ -223,7 +224,7 @@
         {activeIssues.map((i) => i.label).join(", ")}
       </h3>
       <p class="text-white/50 text-sm font-body mt-1">
-        Confidence: {postureStore.confidence}%
+        {i18n.t('confidence')}: {postureStore.confidence}%
       </p>
     </div>
   </div>
@@ -235,19 +236,19 @@
       >
         {postureStore.distance}<span class="text-sm opacity-50">cm</span>
       </p>
-      <p class="text-xs text-white/40 font-body mt-1">Distance</p>
+      <p class="text-xs text-white/40 font-body mt-1">{i18n.t('distance')}</p>
     </div>
     <div class="text-center">
       <p class="text-2xl font-display font-bold {getStatusColor(leanStatus)}">
         {postureStore.leanAngle.toFixed(1)}°
       </p>
-      <p class="text-xs text-white/40 font-body mt-1">Lean</p>
+      <p class="text-xs text-white/40 font-body mt-1">{i18n.t('lean')}</p>
     </div>
     <div class="text-center">
       <p class="text-2xl font-display font-bold {getStatusColor(slouchStatus)}">
         {postureStore.shoulderAngle}°
       </p>
-      <p class="text-xs text-white/40 font-body mt-1">Slouch</p>
+      <p class="text-xs text-white/40 font-body mt-1">{i18n.t('slouch')}</p>
     </div>
   </div>
 </div>
