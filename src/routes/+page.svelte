@@ -5,11 +5,20 @@
 	import StatusCard from '$lib/components/status-card.svelte';
 	import StatsCard from '$lib/components/stats-card.svelte';
 	import SettingsCard from '$lib/components/settings-card.svelte';
+	import { notificationStore } from '$lib/stores/notifications.svelte.ts';
 
 	let mounted = $state(false);
 
 	onMount(() => {
 		mounted = true;
+
+		// Request notification permission after a brief delay
+		// Gives user time to see the app before the browser prompt
+		setTimeout(async () => {
+			if (notificationStore.browserPermission === 'default') {
+				await notificationStore.requestPermission();
+			}
+		}, 2000);
 	});
 </script>
 
