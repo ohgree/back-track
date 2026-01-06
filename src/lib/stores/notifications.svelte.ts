@@ -30,7 +30,26 @@ interface NotificationStore {
 
 let notifications = $state<Notification[]>([]);
 let notificationId = 0;
-let browserPermission = $state<NotificationPermission | "default">("default");
+
+// Initialize with actual browser permission if available
+const getInitialPermission = (): NotificationPermission | "default" => {
+  if (typeof window !== "undefined" && "Notification" in window) {
+    return Notification.permission;
+  }
+  return "default";
+};
+
+let browserPermission = $state<NotificationPermission | "default">(getInitialPermission());
+
+// Sync permission state on client-side hydration
+if (typeof window !== "undefined") {
+  // Re-check permission in case it was set during SSR
+  setTimeout(() => {
+    if ("Notification" in window) {
+      browserPermission = Notification.permission;
+    }
+  }, 0);
+}
 
 export const notificationStore: NotificationStore = {
   get notifications() {
@@ -71,7 +90,12 @@ export const notificationStore: NotificationStore = {
       }, duration);
     }
 
-    if (browserPermission === "granted" && document.hidden) {
+    // Always send browser notification for warnings/dangers when permission is granted
+    // The browser will handle showing it appropriately based on focus state
+    if (
+      browserPermission === "granted" &&
+      (type === NotificationType.WARNING || type === NotificationType.DANGER)
+    ) {
       this.sendBrowserNotification(message, type);
     }
 

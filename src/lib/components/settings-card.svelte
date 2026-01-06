@@ -1,11 +1,18 @@
 <script lang="ts">
-	import { postureStore } from '../stores/posture.svelte.ts';
-	import { notificationStore } from '../stores/notifications.svelte.ts';
+	import { postureStore } from '../stores/posture.svelte';
+	import { notificationStore, NotificationType } from '../stores/notifications.svelte';
 
 	let showSettings = $state(false);
 
 	async function requestNotificationPermission(): Promise<void> {
 		await notificationStore.requestPermission();
+	}
+
+	function testNotification(): void {
+		// Send both in-app and browser notification for testing
+		notificationStore.add('Test notification - Browser notifications are working!', NotificationType.SUCCESS);
+		// Force browser notification even if tab is visible
+		notificationStore.sendBrowserNotification('Test notification - Browser notifications are working!', NotificationType.SUCCESS);
 	}
 </script>
 
@@ -54,7 +61,15 @@
 					<p class="text-white/40 text-xs">Get alerts even when tab is hidden</p>
 				</div>
 				{#if notificationStore.browserPermission === 'granted'}
-					<span class="text-back-400 text-sm">✓ Enabled</span>
+					<div class="flex items-center gap-2">
+						<span class="text-back-400 text-sm">✓ Enabled</span>
+						<button
+							onclick={testNotification}
+							class="px-2 py-1 bg-white/10 hover:bg-white/20 text-white/60 hover:text-white text-xs rounded transition-colors"
+						>
+							Test
+						</button>
+					</div>
 				{:else if notificationStore.browserPermission === 'denied'}
 					<span class="text-danger-400 text-sm">Blocked</span>
 				{:else}
