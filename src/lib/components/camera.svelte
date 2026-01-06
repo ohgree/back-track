@@ -42,12 +42,27 @@
   let calibrationStartTime = $state<number | null>(null);
   let showAbstractView = $state(false);
   let currentLandmarks = $state<Landmark[] | null>(null);
+  let calibrationTick = $state(0); // Reactive tick for progress bar animation
+  let calibrationTickInterval: ReturnType<typeof setInterval> | null = null;
 
   // Sync showAbstractView with calibration state
   $effect(() => {
     if (!postureStore.isCalibrated) {
       showAbstractView = false;
       calibrationStartTime = null;
+    }
+  });
+
+  // Start/stop calibration tick interval based on calibration state
+  $effect(() => {
+    if (calibrationStartTime && !postureStore.isCalibrated) {
+      // Start ticking for progress bar animation
+      calibrationTickInterval = setInterval(() => {
+        calibrationTick++;
+      }, 50);
+    } else if (calibrationTickInterval) {
+      clearInterval(calibrationTickInterval);
+      calibrationTickInterval = null;
     }
   });
 
@@ -59,6 +74,9 @@
   onDestroy(() => {
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId);
+    }
+    if (calibrationTickInterval) {
+      clearInterval(calibrationTickInterval);
     }
     if (videoElement?.srcObject) {
       (videoElement.srcObject as MediaStream)
@@ -310,7 +328,10 @@
   });
 
   // Calibration progress (0-100)
+  // Uses calibrationTick to force reactivity updates
   const calibrationProgress = $derived.by(() => {
+    // Reference calibrationTick to make this reactive
+    void calibrationTick;
     if (postureStore.isCalibrated) return 100;
     if (!calibrationStartTime) return 0;
     return Math.min(100, ((Date.now() - calibrationStartTime) / CALIBRATION_TIME) * 100);
@@ -613,16 +634,6 @@
           <div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 rounded-tr-xl transition-colors duration-300 {isDetected ? 'border-back-500' : 'border-white/50'}"></div>
           <div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 rounded-bl-xl transition-colors duration-300 {isDetected ? 'border-back-500' : 'border-white/50'}"></div>
           <div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 rounded-br-xl transition-colors duration-300 {isDetected ? 'border-back-500' : 'border-white/50'}"></div>
-        </div>
-      </div>
-
-      <!-- Confidence indicator badge -->
-      <div class="absolute top-16 right-4 text-right">
-        <div class="px-3 py-2 rounded-lg bg-black/50 backdrop-blur-sm border border-white/10">
-          <div class="text-xs text-white/50 uppercase tracking-wider mb-1">Detection</div>
-          <div class="text-lg font-mono font-bold transition-colors duration-300 {confidenceColor}">
-            {postureStore.confidence}%
-          </div>
         </div>
       </div>
 
