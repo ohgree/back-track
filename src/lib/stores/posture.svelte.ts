@@ -8,8 +8,7 @@ export const PostureStatus = {
   NOT_DETECTED: "not_detected",
 } as const;
 
-export type PostureStatusType =
-  (typeof PostureStatus)[keyof typeof PostureStatus];
+export type PostureStatusType = (typeof PostureStatus)[keyof typeof PostureStatus];
 
 export interface PostureThresholds {
   minDistance: number;
@@ -181,9 +180,7 @@ function createPostureStore(): PostureStore {
 
     getPostureScore(): number {
       if (sessionStats.totalTime === 0) return 100;
-      return Math.round(
-        (sessionStats.goodPostureTime / sessionStats.totalTime) * 100
-      );
+      return Math.round((sessionStats.goodPostureTime / sessionStats.totalTime) * 100);
     },
 
     calibrateSlouchBaseline(baseline: number) {

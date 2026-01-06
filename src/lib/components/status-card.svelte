@@ -17,9 +17,7 @@
     if (postureStore.status === PostureStatus.NOT_DETECTED) return "neutral";
     const absLean = Math.abs(postureStore.leanAngle);
     if (absLean > postureStore.thresholds.maxLeanAngle) {
-      return absLean > postureStore.thresholds.maxLeanAngle * 1.5
-        ? "danger"
-        : "warning";
+      return absLean > postureStore.thresholds.maxLeanAngle * 1.5 ? "danger" : "warning";
     }
     return "good";
   });
@@ -27,8 +25,7 @@
   const slouchStatus = $derived.by(() => {
     if (postureStore.status === PostureStatus.NOT_DETECTED) return "neutral";
     if (postureStore.shoulderAngle > postureStore.thresholds.maxSlouchAngle) {
-      return postureStore.shoulderAngle >
-        postureStore.thresholds.maxSlouchAngle * 1.5
+      return postureStore.shoulderAngle > postureStore.thresholds.maxSlouchAngle * 1.5
         ? "danger"
         : "warning";
     }
@@ -63,10 +60,7 @@
       issues.push({ label: i18n.t("tooClose"), type: "distance" });
     }
     if (leanStatus !== "good") {
-      const label =
-        postureStore.leanAngle > 0
-          ? i18n.t("leaningRight")
-          : i18n.t("leaningLeft");
+      const label = postureStore.leanAngle > 0 ? i18n.t("leaningRight") : i18n.t("leaningLeft");
       issues.push({ label, type: "lean" });
     }
     if (slouchStatus !== "good") {
@@ -74,9 +68,7 @@
     }
 
     if (issues.length === 0) {
-      return [
-        { label: i18n.t("perfectPosture"), type: "perfect" as IssueType },
-      ];
+      return [{ label: i18n.t("perfectPosture"), type: "perfect" as IssueType }];
     }
 
     return issues;
@@ -85,17 +77,9 @@
   // Overall status for card styling
   const overallStatus = $derived.by(() => {
     if (postureStore.status === PostureStatus.NOT_DETECTED) return "neutral";
-    if (
-      distanceStatus === "danger" ||
-      leanStatus === "danger" ||
-      slouchStatus === "danger"
-    )
+    if (distanceStatus === "danger" || leanStatus === "danger" || slouchStatus === "danger")
       return "danger";
-    if (
-      distanceStatus === "warning" ||
-      leanStatus === "warning" ||
-      slouchStatus === "warning"
-    )
+    if (distanceStatus === "warning" || leanStatus === "warning" || slouchStatus === "warning")
       return "warning";
     return "good";
   });
@@ -139,7 +123,7 @@
 >
   <div class="flex items-center gap-4">
     <div class="status-pulse flex gap-2 shrink-0">
-      {#each activeIssues as issue}
+      {#each activeIssues as issue (issue.type)}
         {#if issue.type === "searching"}
           <!-- Eye/Search icon -->
           <svg
@@ -236,9 +220,7 @@
       {/each}
     </div>
     <div class="flex-1 min-w-0">
-      <h3
-        class="font-display text-lg font-semibold {cardStyles.labelColor} truncate"
-      >
+      <h3 class="font-display text-lg font-semibold {cardStyles.labelColor} truncate">
         {activeIssues.map((i) => i.label).join(", ")}
       </h3>
       <p class="text-white/50 text-sm font-body mt-1">
@@ -249,9 +231,7 @@
 
   <div class="grid grid-cols-3 gap-4 mt-6">
     <div class="text-center">
-      <p
-        class="text-2xl font-display font-bold {getStatusColor(distanceStatus)}"
-      >
+      <p class="text-2xl font-display font-bold {getStatusColor(distanceStatus)}">
         {postureStore.distance}<span class="text-sm opacity-50">cm</span>
       </p>
       <p class="text-xs text-white/40 font-body mt-1">{i18n.t("distance")}</p>

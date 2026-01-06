@@ -7,8 +7,7 @@ export const NotificationType = {
   INFO: "info",
 } as const;
 
-export type NotificationTypeValue =
-  (typeof NotificationType)[keyof typeof NotificationType];
+export type NotificationTypeValue = (typeof NotificationType)[keyof typeof NotificationType];
 
 export interface Notification {
   id: number;
@@ -103,9 +102,7 @@ export const notificationStore: NotificationStore = {
   },
 
   remove(id: number): void {
-    notifications = notifications.map((n) =>
-      n.id === id ? { ...n, exiting: true } : n
-    );
+    notifications = notifications.map((n) => (n.id === id ? { ...n, exiting: true } : n));
 
     setTimeout(() => {
       notifications = notifications.filter((n) => n.id !== id);
@@ -122,10 +119,10 @@ export const notificationStore: NotificationStore = {
         type === NotificationType.DANGER
           ? "🚨"
           : type === NotificationType.WARNING
-          ? "⚠️"
-          : type === NotificationType.SUCCESS
-          ? "✅"
-          : "ℹ️";
+            ? "⚠️"
+            : type === NotificationType.SUCCESS
+              ? "✅"
+              : "ℹ️";
 
       // Use unique tag per notification so new ones always appear
       // even if previous notification wasn't dismissed

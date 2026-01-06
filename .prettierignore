@@ -1,0 +1,14 @@
+# Package manager
+node_modules
+pnpm-lock.yaml
+
+# Build output
+build
+.svelte-kit
+
+# IDE
+.vscode
+
+# Misc
+*.md
+

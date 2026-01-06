@@ -57,7 +57,7 @@
         </h1>
       </div>
       <p class="text-white/50 font-body text-lg max-w-md mx-auto">
-        {i18n.t('appSubtitle')}
+        {i18n.t("appSubtitle")}
       </p>
     </header>
 
@@ -66,9 +66,7 @@
         {#if mounted}
           <Camera />
         {:else}
-          <div
-            class="aspect-4/3 bg-black/50 rounded-2xl flex items-center justify-center"
-          >
+          <div class="aspect-4/3 bg-black/50 rounded-2xl flex items-center justify-center">
             <div
               class="w-12 h-12 border-4 border-back-500 border-t-transparent rounded-full animate-spin"
             ></div>
@@ -76,27 +74,26 @@
         {/if}
 
         <div class="glass rounded-2xl p-5 border border-white/10">
-          <h3
-            class="font-display font-semibold text-white/80 mb-3 flex items-center gap-2"
-          >
-            <span>💡</span> {i18n.t('quickTips')}
+          <h3 class="font-display font-semibold text-white/80 mb-3 flex items-center gap-2">
+            <span>💡</span>
+            {i18n.t("quickTips")}
           </h3>
           <ul class="space-y-2 text-white/50 text-sm font-body">
             <li class="flex items-start gap-2">
               <span class="text-back-400">•</span>
-              <span>{i18n.t('tip1')}</span>
+              <span>{i18n.t("tip1")}</span>
             </li>
             <li class="flex items-start gap-2">
               <span class="text-back-400">•</span>
-              <span>{i18n.t('tip2')}</span>
+              <span>{i18n.t("tip2")}</span>
             </li>
             <li class="flex items-start gap-2">
               <span class="text-back-400">•</span>
-              <span>{i18n.t('tip3')}</span>
+              <span>{i18n.t("tip3")}</span>
             </li>
             <li class="flex items-start gap-2">
               <span class="text-back-400">•</span>
-              <span>{i18n.t('tip4')}</span>
+              <span>{i18n.t("tip4")}</span>
             </li>
           </ul>
         </div>
@@ -108,24 +105,22 @@
         <SettingsCard />
 
         <div class="glass rounded-2xl p-5 border border-white/10">
-          <h3
-            class="font-display font-semibold text-white/80 mb-2 flex items-center gap-2"
-          >
-            <span>🔒</span> {i18n.t('privacyFirst')}
+          <h3 class="font-display font-semibold text-white/80 mb-2 flex items-center gap-2">
+            <span>🔒</span>
+            {i18n.t("privacyFirst")}
           </h3>
           <p class="text-white/40 text-sm font-body">
-            {i18n.t('privacyDesc')}
+            {i18n.t("privacyDesc")}
           </p>
         </div>
 
         <div class="glass rounded-2xl p-5 border border-warn-500/20">
-          <h3
-            class="font-display font-semibold text-warn-400 mb-2 flex items-center gap-2"
-          >
-            <span>⚠️</span> {i18n.t('keepTabVisible')}
+          <h3 class="font-display font-semibold text-warn-400 mb-2 flex items-center gap-2">
+            <span>⚠️</span>
+            {i18n.t("keepTabVisible")}
           </h3>
           <p class="text-white/40 text-sm font-body">
-            {i18n.t('keepTabDesc')}
+            {i18n.t("keepTabDesc")}
           </p>
         </div>
       </div>
@@ -133,7 +128,7 @@
 
     <footer class="mt-12 text-center">
       <p class="text-white/30 text-sm font-body">
-        {i18n.t('footerText')}
+        {i18n.t("footerText")}
       </p>
       <a
         href="https://github.com/ohgree/back-track"
@@ -154,15 +149,8 @@
 
 <style>
   main {
-    background-image: radial-gradient(
-        ellipse at top,
-        rgba(34, 197, 94, 0.1) 0%,
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 80% 80%,
-        rgba(34, 197, 94, 0.05) 0%,
-        transparent 30%
-      );
+    background-image:
+      radial-gradient(ellipse at top, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 30%);
   }
 </style>

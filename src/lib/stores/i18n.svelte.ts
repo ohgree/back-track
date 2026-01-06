@@ -4,8 +4,7 @@ export const translations = {
   en: {
     // App
     appTitle: "BackTrack",
-    appSubtitle:
-      "AI-powered posture monitoring to keep your back healthy while you work",
+    appSubtitle: "AI-powered posture monitoring to keep your back healthy while you work",
     pageTitle: "BackTrack — Posture Monitoring",
 
     // Quick Tips
@@ -73,11 +72,9 @@ export const translations = {
 
     // Camera
     initializingPose: "Initializing pose detection...",
-    cameraAccessDenied:
-      "Camera access denied. Please enable camera permissions.",
+    cameraAccessDenied: "Camera access denied. Please enable camera permissions.",
     poseDetectionFailed: "Failed to load pose detection model.",
-    calibrationComplete:
-      "Calibration complete! Your current posture is now the baseline.",
+    calibrationComplete: "Calibration complete! Your current posture is now the baseline.",
     testNotification: "Test notification - Browser notifications are working!",
     goodPostureStatus: "✓ Good Posture",
     leaningStatus: "⚠ Leaning",
@@ -178,8 +175,7 @@ export const translations = {
 
     // Camera
     initializingPose: "자세 감지 초기화 중...",
-    cameraAccessDenied:
-      "카메라 접근이 거부되었습니다. 카메라 권한을 활성화해 주세요.",
+    cameraAccessDenied: "카메라 접근이 거부되었습니다. 카메라 권한을 활성화해 주세요.",
     poseDetectionFailed: "자세 감지 모델을 불러오는 데 실패했습니다.",
     calibrationComplete: "보정 완료! 현재 자세가 기준선으로 설정되었습니다.",
     testNotification: "테스트 알림 - 브라우저 알림이 정상 작동합니다!",
