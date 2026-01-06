@@ -120,6 +120,17 @@ src/
    - **Slouch angle** (forward head posture)
 4. **Notifications** — Triggers alerts when thresholds are exceeded for 5+ seconds
 
+## Limitations
+
+> **⚠️ Keep this tab visible for posture monitoring to work.**
+
+Due to browser security and performance restrictions:
+
+- **Pose detection requires an active tab** — Browsers throttle or pause `requestAnimationFrame` and video processing when tabs are in the background. This means posture monitoring only works while the BackTrack tab is visible.
+- **Notifications work best in foreground** — While browser notifications are sent for posture alerts, the detection itself cannot run when you switch to another tab or application.
+
+**Workaround:** Keep BackTrack open in a separate browser window positioned where you can see it, or use a secondary monitor.
+
 ## License
 
 [MIT](LICENSE)

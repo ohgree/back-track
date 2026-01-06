@@ -117,6 +117,18 @@
             ever sent to any server.
           </p>
         </div>
+
+        <div class="glass rounded-2xl p-5 border border-warn-500/20">
+          <h3
+            class="font-display font-semibold text-warn-400 mb-2 flex items-center gap-2"
+          >
+            <span>⚠️</span> Keep Tab Visible
+          </h3>
+          <p class="text-white/40 text-sm font-body">
+            Posture monitoring only works while this tab is active. Browsers
+            pause camera processing for background tabs.
+          </p>
+        </div>
       </div>
     </div>
 
