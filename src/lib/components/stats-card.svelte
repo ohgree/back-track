@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { postureStore } from '../stores/posture.svelte.ts';
+	import { postureStore } from '../stores/posture.svelte';
 	import { i18n } from '../stores/i18n.svelte';
 
 	function formatTime(seconds: number): string {

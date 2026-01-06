@@ -2,7 +2,7 @@
  * Pose Analyzer - Analyzes MediaPipe pose landmarks to detect posture issues
  */
 
-import { PostureStatus, type PostureStatusType, type PostureThresholds } from '../stores/posture.svelte.ts';
+import { PostureStatus, type PostureStatusType, type PostureThresholds } from '../stores/posture.svelte';
 
 export interface Landmark {
 	x: number;

@@ -25,15 +25,15 @@ export interface SessionStats {
 }
 
 export interface PostureStore {
-  readonly status: PostureStatusType;
-  readonly confidence: number;
-  readonly distance: number;
-  readonly leanAngle: number;
-  readonly shoulderAngle: number;
-  readonly isTracking: boolean;
+  status: PostureStatusType;
+  confidence: number;
+  distance: number;
+  leanAngle: number;
+  shoulderAngle: number;
+  isTracking: boolean;
   readonly isCalibrated: boolean;
-  readonly lastGoodPosture: number;
-  readonly badPostureDuration: number;
+  lastGoodPosture: number;
+  badPostureDuration: number;
   readonly thresholds: PostureThresholds;
   readonly sessionStats: SessionStats;
   readonly slouchBaseline: number | null;
