@@ -8,6 +8,10 @@ AI-powered posture monitoring web app that uses your camera to detect bad postur
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38bdf8?logo=tailwindcss)
 ![MediaPipe](https://img.shields.io/badge/MediaPipe-Pose-4285f4?logo=google)
 
+## Demo
+
+https://github.com/user-attachments/assets/2efb17d6-f0a1-413f-a88f-26a767fb651e
+
 ## Features
 
 - **📹 Real-time pose detection** — Uses MediaPipe to track 33 body landmarks at 30fps
