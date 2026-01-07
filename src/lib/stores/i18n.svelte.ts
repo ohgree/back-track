@@ -20,7 +20,7 @@ export const translations = {
       "All processing happens locally in your browser. No video data is ever sent to any server.",
     keepTabVisible: "Keep Tab Visible",
     keepTabDesc:
-      "Posture monitoring only works while this tab is active. Browsers pause camera processing for background tabs.",
+      "For best results, keep this tab visible. Background tracking continues at a reduced rate (once per second).",
 
     // Footer
     footerText: "Built with Svelte & MediaPipe • Your posture, your privacy",
@@ -103,6 +103,9 @@ export const translations = {
     leaningLeftNotification: "Leaning left",
     leaningRightNotification: "Leaning right",
     slouchingNotification: "Slouching detected",
+
+    // Background mode
+    backgroundMode: "Background mode (limited)",
   },
   ko: {
     // App
@@ -123,7 +126,7 @@ export const translations = {
       "모든 처리는 브라우저에서 로컬로 이루어집니다. 영상 데이터는 서버로 전송되지 않습니다.",
     keepTabVisible: "탭을 활성 상태로 유지",
     keepTabDesc:
-      "이 탭이 활성화되어 있을 때만 자세 모니터링이 작동합니다. 브라우저는 백그라운드 탭의 카메라 처리를 일시 중지합니다.",
+      "최상의 결과를 위해 이 탭을 활성 상태로 유지하세요. 백그라운드 추적은 초당 1회로 제한됩니다.",
 
     // Footer
     footerText: "Svelte & MediaPipe로 제작 • 당신의 자세, 당신의 프라이버시",
@@ -206,6 +209,9 @@ export const translations = {
     leaningLeftNotification: "왼쪽으로 기울어져 있습니다",
     leaningRightNotification: "오른쪽으로 기울어져 있습니다",
     slouchingNotification: "구부정한 자세가 감지되었습니다",
+
+    // Background mode
+    backgroundMode: "백그라운드 모드 (제한됨)",
   },
 } as const;
 

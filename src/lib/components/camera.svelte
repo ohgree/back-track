@@ -15,17 +15,23 @@
   let canvasElement = $state<HTMLCanvasElement | null>(null);
   let poseLandmarker = $state<PoseLandmarker | null>(null);
   let animationFrameId: number | null = null;
+  let backgroundIntervalId: ReturnType<typeof setInterval> | null = null;
   let lastNotificationTime = 0;
   let lastStatsUpdate = Date.now();
 
   const NOTIFICATION_COOLDOWN = 10000;
   const CALIBRATION_TIME = 3000; // 3 seconds of good tracking to calibrate
   const SMOOTHING_FACTOR = 0.15; // Lower = smoother but slower response
+  const BACKGROUND_INTERVAL = 1000; // 1 second interval when tab is hidden
 
   // Smoothed values for display
   let smoothedDistance = 0;
   let smoothedLeanAngle = 0;
   let smoothedSlouchAngle = 0;
+
+  // Background/visibility state
+  let isPageVisible = $state(true);
+  let webLock: { release: () => void } | null = null;
 
   function smoothValue(current: number, target: number, factor: number = SMOOTHING_FACTOR): number {
     return current + (target - current) * factor;
@@ -64,7 +70,76 @@
     }
   });
 
+  // Handle visibility changes - switch between RAF and setInterval
+  function handleVisibilityChange(): void {
+    isPageVisible = !document.hidden;
+
+    if (document.hidden) {
+      // Tab is hidden - switch to interval-based detection
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      // Start background interval for continued detection
+      if (!backgroundIntervalId && poseLandmarker) {
+        backgroundIntervalId = setInterval(() => {
+          detectPoseOnce();
+        }, BACKGROUND_INTERVAL);
+      }
+
+      // Acquire web lock to prevent tab suspension
+      acquireWebLock();
+    } else {
+      // Tab is visible - use requestAnimationFrame
+      if (backgroundIntervalId) {
+        clearInterval(backgroundIntervalId);
+        backgroundIntervalId = null;
+      }
+
+      // Release web lock
+      releaseWebLock();
+
+      // Restart RAF-based detection
+      if (!animationFrameId && poseLandmarker) {
+        detectPose();
+      }
+    }
+  }
+
+  // Web Lock API to prevent tab suspension
+  async function acquireWebLock(): Promise<void> {
+    if ("locks" in navigator && !webLock) {
+      try {
+        await navigator.locks.request(
+          "posture-tracking",
+          { mode: "exclusive", ifAvailable: true },
+          async (lock) => {
+            if (lock) {
+              // Hold the lock while we're in background
+              return new Promise<void>((resolve) => {
+                webLock = { release: resolve };
+              });
+            }
+          }
+        );
+      } catch {
+        // Web Locks not fully supported, continue without
+      }
+    }
+  }
+
+  function releaseWebLock(): void {
+    if (webLock) {
+      webLock.release();
+      webLock = null;
+    }
+  }
+
   onMount(async () => {
+    // Set up visibility change listener
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     await initCamera();
     await initPoseDetection();
   });
@@ -73,9 +148,19 @@
     if (animationFrameId) {
       cancelAnimationFrame(animationFrameId);
     }
+    if (backgroundIntervalId) {
+      clearInterval(backgroundIntervalId);
+    }
     if (calibrationTickInterval) {
       clearInterval(calibrationTickInterval);
     }
+
+    // Clean up visibility listener
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+    // Release web lock
+    releaseWebLock();
+
     if (videoElement?.srcObject) {
       (videoElement.srcObject as MediaStream).getTracks().forEach((track) => track.stop());
     }
@@ -128,9 +213,9 @@
     }
   }
 
-  function detectPose(): void {
+  // Core detection logic - shared between RAF and interval modes
+  function processPoseResults(): void {
     if (!videoElement || !poseLandmarker || videoElement.readyState < 2) {
-      animationFrameId = requestAnimationFrame(detectPose);
       return;
     }
 
@@ -212,14 +297,23 @@
         postureStore.lastGoodPosture = now;
       }
 
-      if (showSkeleton && canvasElement && !showAbstractView) {
+      if (showSkeleton && canvasElement && !showAbstractView && isPageVisible) {
         drawSkeleton(landmarks, analysis);
       }
     } else {
       postureStore.status = PostureStatus.NOT_DETECTED;
       postureStore.confidence = 0;
     }
+  }
 
+  // Single pose detection (for background interval)
+  function detectPoseOnce(): void {
+    processPoseResults();
+  }
+
+  // Continuous pose detection using requestAnimationFrame
+  function detectPose(): void {
+    processPoseResults();
     animationFrameId = requestAnimationFrame(detectPose);
   }
 
@@ -742,6 +836,25 @@
         <div class="mt-3 text-center text-xs text-white/40 font-body">
           {i18n.t("calibrationTip")}
         </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Background mode indicator -->
+  {#if !isPageVisible && postureStore.isTracking}
+    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+      <div
+        class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-warn-500/20 border border-warn-500/40 backdrop-blur-sm"
+      >
+        <div class="relative flex h-2 w-2">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-warn-400 opacity-75"
+          ></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-warn-500"></span>
+        </div>
+        <span class="text-warn-400 text-xs font-medium">
+          {i18n.t("backgroundMode") || "Background mode (limited)"}
+        </span>
       </div>
     </div>
   {/if}
