@@ -102,6 +102,7 @@ function calculateLeanAngle(landmarks: Landmark[]): number {
 
 /**
  * Get raw nose-to-shoulder ratio for calibration
+ * This combines both vertical position (y) and depth (z) for accurate slouch detection
  */
 export function getNoseToShoulderRatio(landmarks: Landmark[]): number | null {
   const nose = landmarks[LANDMARKS.NOSE];
@@ -113,9 +114,22 @@ export function getNoseToShoulderRatio(landmarks: Landmark[]): number | null {
   const shoulderMid = {
     x: (leftShoulder.x + rightShoulder.x) / 2,
     y: (leftShoulder.y + rightShoulder.y) / 2,
+    z: (leftShoulder.z + rightShoulder.z) / 2,
   };
 
-  return shoulderMid.y - nose.y;
+  // Combine vertical (y) and depth (z) measurements
+  // y component: how high the nose is above shoulders (larger = more upright)
+  const yComponent = shoulderMid.y - nose.y;
+
+  // z component: how far forward the nose is relative to shoulders
+  // In MediaPipe, more negative z = closer to camera
+  // When slouching forward, nose.z becomes more negative (closer to camera) than shoulders
+  // So (shoulderMid.z - nose.z) becomes positive when slouching forward
+  const zComponent = shoulderMid.z - nose.z;
+
+  // Combine: subtract z component so that forward head (positive z diff) reduces the ratio
+  // This makes the ratio decrease when slouching (head forward) and increase when leaning back
+  return yComponent - zComponent * 0.5;
 }
 
 /**
@@ -130,11 +144,14 @@ function calculateSlouchAngle(landmarks: Landmark[], baseline: number | null): n
   const baselineValue = baseline ?? ratio; // If no baseline, assume current is good
 
   // Calculate deviation from baseline
-  // Negative deviation (head moving down/forward relative to shoulders) = slouching
+  // When slouching forward: nose moves forward (z more negative) AND down (y increases)
+  // This makes ratio smaller, so deviation = baselineValue - ratio becomes positive
+  // When leaning back: nose moves back (z more positive) AND up (y decreases)
+  // This makes ratio larger, so deviation becomes negative
   const deviation = baselineValue - ratio;
 
   // Convert to degrees-like value (scale factor for sensitivity)
-  // Positive = slouching forward, Negative = leaning back / sitting straighter
+  // Positive = slouching forward, Negative = leaning back
   const angleDeg = deviation * 150;
 
   return Math.round(angleDeg * 10) / 10;
