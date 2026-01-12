@@ -40,7 +40,7 @@
       )} {notification.exiting ? 'notification-exit' : 'notification-enter'}"
     >
       <div class="flex items-start gap-3">
-        <span class="text-xl flex-shrink-0">{getIcon(notification.type)}</span>
+        <span class="text-xl shrink-0">{getIcon(notification.type)}</span>
         <div class="flex-1">
           <p class="font-body text-sm">{notification.message}</p>
           <p class="text-xs opacity-60 mt-1 font-mono">
